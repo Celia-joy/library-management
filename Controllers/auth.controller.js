@@ -20,8 +20,8 @@ export const signUp = async (req, res, next) =>{
         } 
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
-        const [newMember] = await Member.create(
-            [{name, email, password:hashedPassword}],
+        const newMember = await Member.create(
+            {name, email, password:hashedPassword}
         );
 
         res.status(201).json({
@@ -50,8 +50,14 @@ export const signIn = async (req, res, next) =>{
             error.statusCode = 400;
             throw error;
         }
-        const member = await Member.findOne({email}).select('+password');
+        const member = await Member.findOne({email});
         if(!member){
+            const error = new Error('Invalid credentials');
+            error.statusCode = 401;
+            throw error;
+        }
+        const isPasswordValid = await bcrypt.compare(password, member.password);
+        if(!isPasswordValid){
             const error = new Error('Invalid credentials');
             error.statusCode = 401;
             throw error;
@@ -82,6 +88,6 @@ export const signIn = async (req, res, next) =>{
 export const signOut = async(req, res, next) => {
     res.status(200).json({
         success: true,
-        message: 'Member signed out successfully'
+        message: 'Member signed out successfully-please delete your token client side'
     });
 }
