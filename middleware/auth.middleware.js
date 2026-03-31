@@ -30,5 +30,21 @@ const authorize = async (req, res, next)=>{
         });
     }
 }
+export const isAdmin = (req, res,next)=>{
+    try{
+        if(req.member.role !== 'admin'){
+            const error = new Error('Access denied. Admins only');
+            error.statusCode = 403;
+            throw error;
+
+        }
+        next();
+
+    }
+    catch(error){
+        next(error);
+    }
+
+}
 
 export default authorize

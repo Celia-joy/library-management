@@ -18,6 +18,12 @@ const memberSchema = new mongoose.Schema({
         required:true,
         minLength:6,
         maxLength:100
+    },
+    role:{
+        type:String,
+        enum: ['member', 'admin'],
+        default:'member'
+
     }
 },{timestamps:true});
 const Member = mongoose.model('Member', memberSchema);
