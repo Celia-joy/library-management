@@ -12,7 +12,7 @@ export const borrowBook = async (req, res, next)=>{
         }
         const existingLoan = await Loan.findOne({
             member: req.member.id,
-            returnedDate: null
+            status: 'borrowed'
         });
         if(existingLoan){
             const error = new Error('Return the first book first so as to borrow another');
@@ -21,7 +21,7 @@ export const borrowBook = async (req, res, next)=>{
         }
         const activeLoans = await Loan.countDocuments({
             book: req.params.id,
-            returnedDate: null
+            status: 'borrowed'
         });
         if(activeLoans >= books.totalCopies){
             const error = new Error ('No copies available');
@@ -38,7 +38,8 @@ export const borrowBook = async (req, res, next)=>{
             book:req.params.id,
             copyNumber,
             borrowedDate,
-            limitDate
+            limitDate,
+            status: 'borrowed'
         });
         res.status(201).json({
             success: true,
@@ -65,13 +66,14 @@ export const returnBook = async(req, res, next)=>{
             throw error;
         }
         
-        if(loan.returnedDate){
+        if(loan.status === 'returned'){
             const error = new Error('Book already returned');
             error.statusCode = 400;
             throw error;
         }
         
-        loan.returnedDate = new Date();
+        loan.status = 'returned';
+        loan.returnDate = new Date();
         await loan.save();
         res.status(200).json({
             success: true,

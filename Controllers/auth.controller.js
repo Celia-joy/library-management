@@ -2,8 +2,17 @@ import Member from '../Models/member.model.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import {JWT_EXPIRES_IN, JWT_SECRET} from '../config/env.js';
+import {body, validationResult} from 'express-validator';
 
 export const signUp = async (req, res, next) =>{
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        const error = new Error('Validation failed');
+        error.statusCode = 400;
+        error.details = errors.array();
+        return next(error);
+    }
+    
     const {name, email, password} = req.body;
     try {
         if(!name || !email || !password){
@@ -42,6 +51,14 @@ export const signUp = async (req, res, next) =>{
 }
 
 export const signIn = async (req, res, next) =>{
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        const error = new Error('Validation failed');
+        error.statusCode = 400;
+        error.details = errors.array();
+        return next(error);
+    }
+    
     try {
         const {email, password} = req.body;
 

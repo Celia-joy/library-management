@@ -5,6 +5,7 @@ import authRouter from './Routes/auth.routes.js';
 import bookRouter from './Routes/book.routes.js';
 import loanRouter from './Routes/loan.routes.js';
 import errorMiddleware from './middleware/error.middleware.js';
+import {startReminderScheduler} from './utils/scheduler.js';
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
@@ -21,6 +22,7 @@ app.use(errorMiddleware)
 
 const startServer = async () => {
     await connectDB();
+    startReminderScheduler();
     app.listen(PORT, () => {
         console.log(`Server is running on port http://localhost:${PORT}`);
     });
