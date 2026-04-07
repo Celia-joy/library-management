@@ -9,14 +9,16 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
+app.get('/',(req, res)=>{
+    res.send('Welcome to the library management system API');
+});
+
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/books', bookRouter);
 app.use('/api/v1/loans', loanRouter);
 app.use(errorMiddleware)
 
-app.get('/',(req, res)=>{
-    res.send('Welcome to the library management system API');
-});
+
 const startServer = async () => {
     await connectDB();
     app.listen(PORT, () => {
