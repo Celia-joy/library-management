@@ -15,14 +15,8 @@ export const signUp = async (req, res, next) =>{
     
     const {name, email, password} = req.body;
     try {
-        if(!name || !email || !password){
-            const error = new Error('Name, email and password are required');
-            error.statusCode = 400;
-            throw error;
-        }
         const existingMember = await Member.findOne({email});
         if(existingMember){
-            console.log(existingMember);
             const error = new Error('Member already exists');
             error.statusCode = 400;
             throw error;
@@ -62,11 +56,6 @@ export const signIn = async (req, res, next) =>{
     try {
         const {email, password} = req.body;
 
-        if(!email || !password){
-            const error = new Error('Email and password are required');
-            error.statusCode = 400;
-            throw error;
-        }
         const member = await Member.findOne({email});
         if(!member){
             const error = new Error('Invalid credentials');

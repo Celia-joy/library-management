@@ -15,7 +15,7 @@ export const borrowBook = async (req, res, next)=>{
             status: 'borrowed'
         });
         if(existingLoan){
-            const error = new Error('Return the first book first so as to borrow another');
+            const error = new Error('Please return your current book before borrowing another');
             error.statusCode = 400;
             throw error;
         }
@@ -88,10 +88,45 @@ export const returnBook = async(req, res, next)=>{
 
 export const getAllLoans = async(req, res, next)=>{
     try{
-        const allLoans = await Loan.find();
+        const allLoans = await Loan.find()
+            .populate('member', 'name email')
+            .populate('book', 'title author');
         res.status(200).json({
             success: true,
             data: allLoans
+        });
+    }
+    catch(error){
+        next(error);
+    }
+}
+
+export const getMyLoans = async(req, res, next)=>{
+    try{
+        const myLoans = await Loan.find({member: req.member._id})
+            .populate('book', 'title author')
+            .sort({createdAt: -1});
+        res.status(200).json({
+            success: true,
+            data: myLoans
+        });
+    }
+    catch(error){
+        next(error);
+    }
+}
+
+export const getMyCurrentLoans = async(req, res, next)=>{
+    try{
+        const myCurrentLoans = await Loan.find({
+            member: req.member._id,
+            status: 'borrowed'
+        })
+            .populate('book', 'title author')
+            .sort({limitDate: 1});
+        res.status(200).json({
+            success: true,
+            data: myCurrentLoans
         });
     }
     catch(error){
