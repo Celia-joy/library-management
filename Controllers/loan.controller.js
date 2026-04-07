@@ -1,0 +1,98 @@
+import Loan from '../Models/loan.model.js';
+import Book from '../Models/book.model.js';
+import Member from '../Models/member.model.js';
+
+export const borrowBook = async (req, res, next)=>{
+    try{
+        const books = await Book.findById(req.params.id);
+        if(!books){
+            const error = new Error('Book not found');
+            error.statusCode = 404;
+            throw error;
+        }
+        const existingLoan = await Loan.findOne({
+            member: req.member.id,
+            returnedDate: null
+        });
+        if(existingLoan){
+            const error = new Error('Return the first book first so as to borrow another');
+            error.statusCode = 400;
+            throw error;
+        }
+        const activeLoans = await Loan.countDocuments({
+            book: req.params.id,
+            returnedDate: null
+        });
+        if(activeLoans >= books.totalCopies){
+            const error = new Error ('No copies available');
+            error.statusCode = 400;
+            throw error;
+        }
+        const copyNumber = activeLoans +1;
+        const borrowedDate = new Date();
+        const limitDate = new Date();
+        limitDate.setDate(limitDate.getDate() + 14);
+
+        const loan = await Loan.create({
+            member: req.member._id,
+            book:req.params.id,
+            copyNumber,
+            borrowedDate,
+            limitDate
+        });
+        res.status(201).json({
+            success: true,
+            message: 'Book borrowed successfully',
+            data:loan
+        });
+    }
+    catch(error){
+        next(error);
+    }
+}
+
+export const returnBook = async(req, res, next)=>{
+    try{
+        const loan = await Loan.findById(req.params.id);
+        if(!loan){
+            const error = new Error('Loan not found');
+            error.statusCode = 404;
+            throw error;
+        }
+        if(loan.member.toString() !== req.member._id.toString()){
+            const error = new Error('You did not borrow this book');
+            error.statusCode = 403;
+            throw error;
+        }
+        
+        if(loan.returnedDate){
+            const error = new Error('Book already returned');
+            error.statusCode = 400;
+            throw error;
+        }
+        
+        loan.returnedDate = new Date();
+        await loan.save();
+        res.status(200).json({
+            success: true,
+            message: 'Book returned successfully',
+            data:loan
+        });
+    }
+    catch(error){
+        next(error);
+    }
+}
+
+export const getAllLoans = async(req, res, next)=>{
+    try{
+        const allLoans = await Loan.find();
+        res.status(200).json({
+            success: true,
+            data: allLoans
+        });
+    }
+    catch(error){
+        next(error);
+    }
+}
