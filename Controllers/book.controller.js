@@ -1,7 +1,7 @@
 import Book from '../Models/book.model.js';
 import {body, validationResult} from 'express-validator';
 
-const validateBook = [
+export const validateBook = [
     body('title').trim().notEmpty().withMessage('Title is required'),
     body('author').trim().notEmpty().withMessage('Author is required'),
     body('totalCopies').isInt({min: 1, max: 5}).withMessage('Total copies must be between 1 and 5')
@@ -91,5 +91,21 @@ export const updateBook = async(req, res, next)=>{
     }
 }
 
-export {validateBook, addBook, getOneBook, getAllBooks, updateBook, deleteBook};
+export const deleteBook = async(req, res, next)=>{
+    try{
+        const book = await Book.findByIdAndDelete(req.params.id);
+        if(!book){
+            const error = new Error('Book not found');
+            error.statusCode = 404;
+            throw error;
+        }
+        res.status(200).json({
+            success:true,
+            message:'Book deleted successfully'
+        });
+    }
+    catch(error){
+        next(error);
+    }
+}
 
