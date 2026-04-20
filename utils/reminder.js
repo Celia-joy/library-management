@@ -4,17 +4,17 @@ export const sendReturnReminderEmail = async (email, name, book)=>{
   const mailerOptions = {
     from: process.env.EMAIL_USER,
     to:email,
-    subject:`Reminder: Your ${book.name} must be returned  in 14 days`,
+    subject:`Reminder: Your ${book.title} must be returned  in 14 days`,
     html: `
     <div style="background-color: #f8f9fa; padding: 20px; color: #333; font-family: Arial, sans-serif;">
       <div style="max-width: 600px; margin: 0 auto; background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
         <h3 style="color: #ff6b35; margin-bottom: 20px;">⏰ Return book Reminder</h3>
         <p>Hi <strong>${name}</strong>,</p>
-        <p>This is a friendly reminder that your <strong>${book.name}</strong> must be returned in <strong>14 days</strong>.</p>
+        <p>This is a friendly reminder that your <strong>${book.name}</strong> must be returned in <strong>14days</strong>.</p>
 
         <div style="margin-top: 20px; padding: 20px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 5px;">
           <h4 style="color: #856404; margin-bottom: 10px;">📋 Book Details</h4>
-          <p style="margin: 5px 0;">${book.name}</p>
+          <p style="margin: 5px 0;">${book.title}</p>
           <p style="margin: 5px 0;"> ${book.author}</p>
           <p style="margin: 5px 0;"> ${book.copyNumber}</p>
           <p style="margin: 5px 0;"><strong>Return Date:</strong> ${new Date(book.limitDate).toDateString()}</p>

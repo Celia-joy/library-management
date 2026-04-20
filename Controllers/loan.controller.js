@@ -73,7 +73,7 @@ export const returnBook = async(req, res, next)=>{
         }
         
         loan.status = 'returned';
-        loan.returnDate = new Date();
+        loan.returnedDate = new Date();
         await loan.save();
         res.status(200).json({
             success: true,

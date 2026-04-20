@@ -31,7 +31,7 @@ export const startReminderScheduler = () => {
                     loan.member.email,
                     loan.member.name,
                     {
-                        name: loan.book.title,
+                        title: loan.book.title,
                         author: loan.book.author,
                         limitDate: loan.limitDate,
                         copyNumber: loan.copyNumber
